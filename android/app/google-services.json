@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "211628794432",
+    "firebase_url": "https://madlab-practical-9-default-rtdb.firebaseio.com",
+    "project_id": "madlab-practical-9",
+    "storage_bucket": "madlab-practical-9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211628794432:android:ffac1221feaf717c93b5a5",
+        "android_client_info": {
+          "package_name": "com.example.madlab_5024125"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxcO3DjhVB0KXPRNsZqyV27ltjIW3lA8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
