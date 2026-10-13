@@ -55,7 +55,7 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
 
       final url = html.Url.createObjectUrlFromBlob(blob);
 
-      final anchor = html.AnchorElement(href: url)
+      html.AnchorElement(href: url)
         ..setAttribute('download', 'sample.txt')
         ..click();
 
@@ -175,7 +175,7 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),

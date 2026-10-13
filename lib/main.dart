@@ -1,6 +1,9 @@
 import 'dart:convert';
-import 'dart:html' as html;
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+import 'file_service.dart';
 
 void main() {
   runApp(const Practical8App());
@@ -39,35 +42,24 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
   bool error = false;
 
   // ACTUAL CREATE + WRITE OPERATION
-  void createAndWriteFile() {
+  Future<void> createAndWriteFile() async {
     try {
       const content =
           'Hello from Flutter!\n\n'
           'This is Practical 8 - File Handling.\n'
           'This text was actually written into a file using Flutter.';
 
-      final bytes = utf8.encode(content);
+      final operationStatus = await writeSampleFile(content);
 
-      final blob = html.Blob(
-        [bytes],
-        'text/plain',
-      );
-
-      final url = html.Url.createObjectUrlFromBlob(blob);
-
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute('download', 'sample.txt')
-        ..click();
-
-      html.Url.revokeObjectUrl(url);
-
+      if (!mounted) return;
       setState(() {
         fileContent = content;
-        status = 'sample.txt created and written successfully!';
+        status = operationStatus;
         success = true;
         error = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         status = 'Error while creating/writing file: $e';
         error = true;
@@ -77,42 +69,38 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
   }
 
   // ACTUAL READ OPERATION
-  void readFile() {
-    final input = html.FileUploadInputElement()
-      ..accept = '.txt,text/plain';
+  Future<void> readFile() async {
+    try {
+      final selection = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['txt'],
+        withData: true,
+      );
 
-    input.click();
+      if (selection == null) return;
 
-    input.onChange.listen((event) {
-      final files = input.files;
-
-      if (files == null || files.isEmpty) {
-        return;
+      final selectedFile = selection.files.single;
+      final bytes = selectedFile.bytes;
+      if (bytes == null) {
+        throw StateError('The selected file could not be read.');
       }
 
-      final file = files.first;
-
-      final reader = html.FileReader();
-
-      reader.readAsText(file);
-
-      reader.onLoad.listen((event) {
-        setState(() {
-          fileContent = reader.result.toString();
-          status = '${file.name} read successfully!';
-          success = true;
-          error = false;
-        });
+      final content = utf8.decode(bytes);
+      if (!mounted) return;
+      setState(() {
+        fileContent = content;
+        status = '${selectedFile.name} read successfully!';
+        success = true;
+        error = false;
       });
-
-      reader.onError.listen((event) {
-        setState(() {
-          status = 'Error while reading file.';
-          error = true;
-          success = false;
-        });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        status = 'Error while reading file: $e';
+        error = true;
+        success = false;
       });
-    });
+    }
   }
 
   void clearFile() {
@@ -175,7 +163,7 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -196,7 +184,7 @@ class _FileHandlingPageState extends State<FileHandlingPage> {
                       const SizedBox(height: 6),
 
                       const Text(
-                        'Perform real file operations using the browser.',
+                        'Create, write and read text files on this device.',
                         style: TextStyle(
                           color: Colors.grey,
                         ),

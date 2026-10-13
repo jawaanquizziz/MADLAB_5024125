@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:madlab_5024125/main.dart';
+import '../practical10/practical10.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Calculator screen loads', (tester) async {
+    await tester.pumpWidget(const CalculatorApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('NOVA'), findsOneWidget);
+    expect(find.text('SMART CALCULATOR'), findsOneWidget);
+    expect(find.text('AC'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('Calculator adds numbers', (tester) async {
+    await tester.pumpWidget(const CalculatorApp());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('2'));
+    await tester.tap(find.text('+'));
+    await tester.tap(find.text('3'));
+    await tester.tap(find.text('='));
+    await tester.pumpAndSettle();
+
+    expect(find.text('5'), findsOneWidget);
+  });
+
+  testWidgets('Calculator clears input', (tester) async {
+    await tester.pumpWidget(const CalculatorApp());
+
+    await tester.tap(find.text('8'));
+    await tester.tap(find.text('AC'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('calculator-display')),
+        matching: find.text('0'),
+      ),
+      findsOneWidget,
+    );
   });
 }
